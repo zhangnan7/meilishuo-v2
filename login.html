@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>登录美丽说</title>
+		<link rel="stylesheet" type="text/css" href="css/login.css"/>
+		<link rel="stylesheet" type="text/css" href="download/font_4ooii04il01wcdi/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="iconfont/iconfont.css" />
+		
+	</head>
+	<body>
+		<div class="page">
+			<h1>
+				<a href="meilishuo__首页.html" ></a>
+			</h1>
+			<div class="main">
+				<div class="main-left">
+					<img src="img/login-left.jpg" />
+				</div>
+				<div class="main-right">
+					<p class="title">
+						登录美丽说
+						<a href="register.html" class="register">新用户注册</a>
+					</p>
+					<form onsubmit="return false">
+						<div action="" class="form">
+							<p class="error-tips" id="errorTip">请输入手机号/邮箱/用户名</p>
+							<div class="item"> <input type="text" id="phone" class="ui-input phone" placeholder="手机号/邮箱/用户名"> </div>
+							<div class="item"> <input type="password" id="password" class="ui-input password" placeholder="密码"> </div>
+							<div class="item"> <input type="submit" id="submit" value="立即登录" class="submit"> </div>
+							<div class="item"> <label>					<input type="checkbox" value="1" name="read" class="check" id="remenber" checked="checked">					记住我				</label>
+								<a href="#" class="forget">忘记密码</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div id="pc-footer"></div>
+	</body>
+</html>
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/cookie.js"></script>
+<script >
+	window.onload=function(){
+	$("#errorTip").hide()
+}
+$("#phone,#password").blur(function(){
+	phone=$("#phone").val()
+	psd=$("#password").val()
+	var reg=/^\d{11}$/;
+	var isphone=reg.test(phone)
+	var reg=/^\w+@\w+$/;
+	var ismail=reg.test(phone)
+/*	console.log(ismail)
+	console.log(isphone)*/
+	var reg=/^\w{3,10}$/;
+	var isname=reg.test(phone)
+	if( (isphone||ismail||isname ) && psd){
+		$("#errorTip").hide()
+	}else{
+		$("#errorTip").show()
+	}
+}).focus(function(){
+	$("#errorTip").hide()
+})
+
+$("#pc-footer").load("public.html #pc-footer");
+
+$("#submit").click(function(){
+	var uid=getCookie("id");
+	var upsd=getCookie("password");
+	if(phone==uid&&psd==upsd){
+		alert("登录成功")
+		location.href="meilishuo__首页.html"
+	}else{
+		$("#errorTip").html("用户名和密码不符").show()
+		
+	}
+	
+})
+
+</script>

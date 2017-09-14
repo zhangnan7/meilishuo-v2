@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>购物车</title>
+		<link rel="stylesheet" type="text/css" href="css/cart.css"/>
+		<link rel="stylesheet" type="text/css" href="download/font_4ooii04il01wcdi/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="iconfont/iconfont.css" />
+		<style>
+			.cart-wrap table tfoot{
+				display: table-header-group;
+			  	vertical-align: middle;
+			  	border-color: inherit;
+			  	border-top: 1px #ddd solid;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header-top"></div>
+		<div class="cart-wrap">
+			<table>
+				<thead>
+					<tr>
+						<th class="all-in">
+							<input type="checkbox" class="selectAll"/>
+							<span>全选</span>
+						</th>
+						
+						<th>商品</th>
+						<th>单价(元)</th>
+						<th>数量</th>
+						<th>小计(元)</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody class="list">
+					<!--<tr>
+						<td><input type="checkbox" /></td>
+						<td> <img src="img/0 (1).jpg" style="width: 50px; height: 60px; vertical-align:middle"/> 套装 秋季新款韩风简约纯色打底连衣裙</td>
+						<td>85.50</td>
+						<td>
+							<span class="clearfix">
+								<span>-</span>
+								<input type="text" value="1" />
+								<span>+</span>
+							</span>
+						</td>
+						<td>85.50</td>
+						<td>删除</td>
+					</tr>-->
+				</tbody>
+				<tfoot class="foot">
+					<tr>
+						<td colspan="4">
+							<input type="checkbox" class="selectAll"/>
+							<span>全选</span>
+						</td>
+						<td colspan="2">
+							<p>共有<span class="count2" style="color: #f36; font-size: 16px;">0</span>件商品,共计:<i class="money2" style="color: #f36; font-size: 20px;font-weight: 800;">  ¥  0.00</i></p>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+			
+		</div>
+		<div id="pc-footer"></div>
+	</body>
+</html>
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/cookie.js"></script>
+<script>
+	$("#header-top").load("public.html #header-top")
+	
+	$("#pc-footer").load("public.html #pc-footer")
+	
+	$(".top_list li").mouseover(function(){
+		$(this).children("a").css("color","#f36")
+		
+	}).eq(4).mouseover(function(){
+		$(".collect").css("display","block")
+	}).end().eq(9).mouseover(function(){
+		$(".service_1").css("display","block")
+	})
+	$(".top_list li").mouseout(function(){
+		$(this).children("a").css("color","")
+		
+	}).eq(4).mouseout(function(){
+		$(".collect").css("display","none")
+	}).end().eq(9).mouseout(function(){
+		$(".service_1").css("display","none")
+	})
+	
+	$(function(){
+		var arr = getCookie("shoplist");
+		var html = "";
+		for(var i in arr){
+			var shopinfo = arr[i];
+			var allcount= (shopinfo.count * shopinfo.price).toFixed(2) 
+			html +=`<tr>
+						<td><input type="checkbox" class="ck"/></td>
+						<td> <img src=${shopinfo.src} style="width: 50px; height: 60px; vertical-align:middle"/>${shopinfo.name}</td>
+						<td>${shopinfo.price}</td>
+						<td>
+							<span class="clearfix count" data-price=${shopinfo.price}  	data-count=${shopinfo.count}  data-name=${shopinfo.name}  data-src=${shopinfo.src } >
+								<span class="updateCount" data-number="-1">-</span>
+								<input type="text" value=${shopinfo.count} class="shop-count"/>
+								<span class="updateCount" data-number="1">+</span>
+							</span>
+						</td>
+						<td class="sumPrice">${allcount}</td>
+						<td class="del">删除</td>
+					</tr>`
+		}
+		$(".list").html( html );
+		
+		//全选
+		$(".selectAll").click(function(){
+			$(".ck").prop("checked", $(this).prop("checked"));
+			jiesuan();
+		})
+		console.log(arr)
+		//删除
+		$(".del").click(function(){
+			//var id = $(this).parent().find(".count").data("id");  //获取当前要删除的商品编号 和名称
+			var pname = $(this).parent().find(".count").data("name");  //获取当前要删除的商品编号 和名称
+			
+			for(var i in arr){
+				if( pname == arr[i].name ){
+					arr.splice(i,1);
+					//操作数组同时，也要改变cookie
+					setCookie("shoplist",JSON.stringify(arr));
+					$(this).parent().remove();
+				}
+			}
+			
+			
+		})
+		
+		//加减操作
+		$(".updateCount").click(function(){
+			
+			var sign = $(this).html();
+			
+			var pname = $(this).parent().data("name");  //获取当前要删除的商品编号 和名称
+			//取出数量
+			var num = $(this).parent().find(".shop-count").val();
+			if( sign == "-" && num == 1 ){
+				return;
+			}
+			for( var i in arr ){
+				if(  pname == arr[i].name ){
+					sign=="+" ? arr[i].count++ : arr[i].count--;
+					setCookie("shoplist",JSON.stringify(arr));
+					var newcount=(arr[i].count * arr[i].price).toFixed(2)
+					$(this).parent().find(".shop-count").val( arr[i].count );
+					$(this).parent().parent().parent().find(".sumPrice").html( newcount  );
+				}
+			}
+			
+		})
+		//点击复选框 结算
+		$(".ck").click(function(){
+			jiesuan();
+		})
+	})
+	
+	//结算
+	function jiesuan(){
+		var money = 0;
+		var count = 0;
+		$(".ck:checked").each(function(){
+			count += parseInt( $(this).parent().parent().find(".shop-count").val() )
+			money += parseInt( $(this).parent().parent().find(".sumPrice").html() )
+		})
+		$(".count2").html( count );
+		$(".money2").html( " ¥ " + money );
+	}
+	
+</script>

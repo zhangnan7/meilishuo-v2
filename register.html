@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>注册</title>
+		<link rel="stylesheet" type="text/css" href="css/register.css"/>
+		<link rel="stylesheet" type="text/css" href="download/font_4ooii04il01wcdi/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="iconfont/iconfont.css" />
+		
+	</head>
+	<body>
+		<div class="page">
+			<h1>
+				<a href="meilishuo__首页.html" ></a>
+			</h1>
+			<div class="main">
+				<div class="main-left">
+					<img src="img/login-left.jpg" />
+				</div>
+				<div class="main-right">
+					<p class="title">
+						新用户注册
+						<a href="login.html" class="register">已有账号</a>
+					</p>
+					<form onsubmit="return false">
+						<div action="" class="form">
+							<p class="error-tips" id="errorTip">请输入手机号/邮箱/用户名</p>
+							<div class="item">
+								<input type="text" id="phone" class="ui-input phone" placeholder="手机号"> 
+							</div>
+							<div class="item"> <input type="password" id="password" class="ui-input password" placeholder="密码"> </div>
+							<div class="item"> <input type="submit" id="submit" value="注册" class="submit"> </div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div id="pc-footer"></div>
+	</body>
+</html>
+<script src="js/jquery-1.11.1.min.js" type="text/javascript"></script>
+<script  src="js/cookie.js" type="text/javascript"></script>
+<script >
+	window.onload=function(){
+	$("#errorTip").hide()
+}
+$("#phone,#password").blur(function(){
+	 phone=$("#phone").val()
+	 psd=$("#password").val()
+	 reg=/^\d{11}$/;
+	 isphone=reg.test(phone)
+	 reg=/^\w{6,}$/;
+	 ispassword=reg.test(psd)
+/*	console.log(ismail)
+	console.log(isphone)*/
+
+	if( isphone && psd){
+		$("#errorTip").hide()
+	}else{
+		$("#errorTip").show()
+	}
+}).focus(function(){
+	$("#errorTip").hide()
+})
+
+$("#pc-footer").load("public.html #pc-footer");
+
+$("#submit").click(function(){
+	if( isphone&&ispassword ){
+		setCookie("id",$("#phone").val());
+		setCookie("password",$("#password").val());
+		console.log(document.cookie)
+		alert("注册成功,请登录")
+		location.href="login.html"
+	}else{
+		$("#errorTip").html("请正确填写用户名和密码").show()
+		
+	}
+})
+</script>
